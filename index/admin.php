@@ -1,10 +1,5 @@
 <?php
-// Mantengo tu sección de validación de sesión intacta por si decides activarla
-// session_start();
-// if(!isset($_SESSION['admin'])){
-//     header("Location: login.php");
-//     exit();
-// }
+
 ?>
 
 <!DOCTYPE html>

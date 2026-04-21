@@ -20,7 +20,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             width: 95%;
-            height: 85vh; /* Ocupa casi toda la altura de la pantalla */
+            height: 85vh; /* Ocupa la altura de la pantalla */
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -34,7 +34,7 @@
             display: flex;
             flex: 1; /* Ocupa el resto del espacio */
         }
-        /* Lado Izquierdo: Próximos Turnos */
+        /*Izq: Próximos Turnos */
         .sidebar-espera {
             width: 30%;
             background: #f8f9fa;
@@ -43,7 +43,7 @@
             display: flex;
             flex-direction: column;
         }
-        /* Lado Derecho: Turno Actual */
+        /*Der: Turno Actual */
         .current-turn-area {
             width: 70%;
             display: flex;
@@ -53,7 +53,7 @@
             text-align: center;
         }
         #turnoPrincipal {
-            font-size: 15rem; /* Tamaño gigante para que se vea de lejos */
+            font-size: 15rem; /* Tamaño grande*/
             font-weight: bold;
             line-height: 1;
             margin: 20px 0;
@@ -112,14 +112,14 @@
             const listaEspera = document.getElementById("listaEspera");
 
             if (turnos.length > 0) {
-                // Turno actual (Derecha)
+                // Turno actual 
                 let actual = turnos[0].split(" - ");
                 principal.innerHTML = actual[0];
-                principal.style.color = "#28a745"; // Verde éxito
+                principal.style.color = "#28a745"; 
 
-                // Próximos turnos (Izquierda)
+                // Próximos turnos 
                 listaEspera.innerHTML = "";
-                let proximos = turnos.slice(1, 6); // Mostramos los siguientes 5
+                let proximos = turnos.slice(1, 6); 
                 
                 if(proximos.length > 0) {
                     proximos.forEach(t => {
@@ -132,7 +132,7 @@
                 }
             } else {
                 principal.innerHTML = "---";
-                principal.style.color = "#fe0505"; // Rojo
+                principal.style.color = "#fe0505"; 
                 listaEspera.innerHTML = "";
             }
         }

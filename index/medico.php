@@ -126,7 +126,7 @@
 <script>
 let turnoActual = null;
 
-// Cargar automático al iniciar la página
+//automático al iniciar la página
 window.onload = function() {
     let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
 

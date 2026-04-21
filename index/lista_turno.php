@@ -97,7 +97,6 @@ function modificar(index){
     }
 }
 
-// 🔥 NUEVA FUNCIÓN (NO rompe nada)
 function atender(index){
     let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
     let historial = JSON.parse(localStorage.getItem("historial")) || [];
