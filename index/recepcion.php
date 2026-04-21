@@ -195,6 +195,8 @@ function generarTurno(){
     localStorage.setItem("turnos", JSON.stringify(turnos));
 
     msg.innerHTML = "<h3 class='fw-bold'>SU TURNO ES: "+turno+"</h3>";
+// Abrir ventana para imprimir
+imprimirTurno(turno, nombre, esp);
 
     contador++;
     cargarLista();
@@ -208,6 +210,36 @@ function cargarLista(){
         let num = parseInt(ultimo.split("-")[1]);
         contador = num + 1;
     }
+}
+
+
+
+function imprimirTurno(turno, nombre, esp, fecha){
+    let ventana = window.open('', '_blank', 'width=400,height=600');
+
+    ventana.document.write(`
+        <html>
+        <head>
+            <title>Turno</title>
+        </head>
+        <body>
+            <div class="ticket">
+                <h2>S.I.G.A.M.</h2>
+                <p><strong>Turno:</strong></p>
+                <h1>${turno}</h1>
+                <p><strong>Nombre:</strong> ${nombre}</p>
+                <p><strong>Especialidad:</strong> ${esp}</p>
+                <br>
+            </div>
+
+            <script>
+                window.print();
+            <\/script>
+        </body>
+        </html>
+    `);
+
+    ventana.document.close();
 }
 </script>
 
