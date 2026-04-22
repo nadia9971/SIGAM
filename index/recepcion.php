@@ -9,34 +9,81 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    
+ 
     <script>
-    // ESTO VA ANTES DE </body> EN recepcion.php
+    // Detectar si venimos de guardar_paciente.php para imprimir
     const urlParams = new URLSearchParams(window.location.search);
+    
     if (urlParams.has('imprimir')) {
         let nombre = urlParams.get('nombre');
         let esp = urlParams.get('esp');
+        // Si no pasas el turno por URL, podemos intentar recuperarlo o dejar el espacio
+        let turnoImprimir = urlParams.get('turno') || "---"; 
+        let fechaActual = new Date().toLocaleDateString('es-MX');
+
+        let ventana = window.open("", "_blank", "width=400,height=500");
         
-        // Abrimos la ventanita (pop-up)
-        let ventana = window.open('', '_blank', 'width=400,height=500');
-        ventana.document.write(`
-            <html>
-            <head><title>Imprimir Ticket</title></head>
-            <body style="font-family: monospace; text-align: center;">
-                <h2>S.I.G.A.M.</h2>
-                <hr>
-                <p><strong>PACIENTE:</strong><br>${nombre}</p>
-                <p><strong>ESPECIALIDAD:</strong><br>${esp}</p>
-                <p>Fecha: ${new Date().toLocaleDateString()}</p>
-                <script>
-                    window.print(); // Abre el cuadro de imprimir
-                    window.onafterprint = function() { window.close(); }; // Cierra la ventanita al terminar
-                <\/script>
-            </body>
-            </html>
-        `);
+       ventana.document.write(`
+    <html>
+    <head>
+        <style>
+            body { 
+                font-family: 'Courier New', Courier, monospace; 
+                text-align: center; 
+                padding: 10px;
+                margin: 0;
+            }
+            .header { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
+            .turno-grande { 
+                font-size: 80px; 
+                font-weight: bold; 
+                margin: 10px 0; 
+                border-top: 3px solid black; 
+                border-bottom: 3px solid black;
+                display: inline-block;
+                padding: 0 20px;
+            }
+            .datos { 
+                font-size: 20px; 
+                margin: 8px 0; 
+                text-transform: uppercase; 
+            }
+            .label { font-weight: bold; }
+            .fecha { font-size: 16px; margin-top: 20px; font-style: italic; }
+        </style>
+    </head>
+    <body>
+        <div class="header">TURNO</div>
+        <div class="turno-grande">${turno}</div>
+        
+        <div class="datos">
+            <span class="label">NOMBRE:</span> ${nombre}
+        </div>
+        
+        <div class="datos">
+            <span class="label">ESPECIALIDAD:</span> ${esp}
+        </div>
+        
+        <div class="fecha">
+            <span class="label">FECHA:</span> ${fechaActual}
+        </div>
+
+        <script>
+            // Un pequeño retraso para que el estilo cargue bien antes de imprimir
+            setTimeout(function() {
+                window.print();
+                window.close();
+            }, 500);
+        <\/script>
+    </body>
+    </html>
+`);
         ventana.document.close();
     }
+    
 </script>
+
     <style>
         body {
             background: linear-gradient(150deg, #BBFCC6, #BBFCF9);
@@ -85,16 +132,17 @@
             background-color: #767cd8;
         }
         .logout-link {
-            color: #fe0505;
-            text-decoration: none;
+            color: #fe0505 !important;
+            text-decoration: none ;
             font-weight: bold;
             font-size: 0.9rem;
         }
         .logout-link:hover {
-            text-decoration: underline;
+            color: #0526fe !important;
+            text-decoration: underline ;
         }
         .ver-lista-link {
-            color: #8a91f3;
+            color: #0010f7;
             text-decoration: none;
             font-weight: bold;
             font-size: 1rem;
@@ -125,6 +173,17 @@ td, th {
     padding: 6px;
     white-space: nowrap;
 }
+
+
+#mensajeTurno h3 {
+    margin-top: 20px;
+    font-size: 1.5rem; /* Lo hice un poco más grande para que se vea bien */
+    padding: 10px;
+    text-align: center;
+    color: #28a745 !important; /* Verde fuerte */
+    font-weight: bold;
+}
+
     </style>
 </head>
 
@@ -160,6 +219,7 @@ td, th {
         <option value="">Seleccione Género</option>
         <option value="Mujer">Mujer</option>
         <option value="Hombre">Hombre</option>
+        <option value="Otro">Otro</option>
     </select>
 
     <select name="especialidad" id="especialidad" class="form-select" required>
@@ -169,9 +229,8 @@ td, th {
         <option value="Nutrición">Nutrición</option>
     </select>
 
-    <button type="submit" class="btn btn-primary-custom mt-2">
-        Generar y Guardar Turno
-    </button>
+    <button type="button" class="btn btn-primary-custom mt-2" onclick="generarTurno()">
+    Generar Turno</button>
 
     <div id="mensajeTurno"></div>
 </form>
@@ -179,54 +238,39 @@ td, th {
 
     </div>
 
-    <hr>
-<div class="text-center mt-4">
-     <a href="lista_turno.php" class="ver-lista-link">
-     <i class="fa-solid "></i> GESTIONAR LISTA DE ESPERA </a>
 
-    <a href="#" onclick="cerrarSesion()" class="logout-link"> Cerrar Sesión </a>
-</div>
+
+  <hr>
+    <div class="text-center">
+        
+        <a href="lista_turno.php" class="ver-lista-link mb-3">
+            <i class="fa-solid"></i> LISTA DE ESPERA
+        </a>
+
+        <ul id="listaTurnos" class="list-unstyled"></ul>
+
+        <div style="text-align: center; margin-top: 20px;">
+                <a href="#" onclick="cerrarSesion()" class= "logout-link">Cerrar Sesión</a>
+            </div>
+        </div>
+    </div>
+
+
+
 
 <script>
 let contador = 1;
 
 function cerrarSesion(){
-    // Guardar datos antes de limpiar
-    let turnos = localStorage.getItem("turnos");
-    let historial = localStorage.getItem("historial");
-
-    localStorage.clear();
-
-    if(turnos){
-        localStorage.setItem("turnos", turnos);
+    if(confirm("¿Finalizar jornada? Los datos de hoy se enviarán al historial del Administrador.")){
+        // Limpiamos los turnos del navegador (LocalStorage)
+        localStorage.clear();
+        
+        // Ejecutamos el respaldo y limpieza en la base de datos
+        window.location.href = "cerrar_respaldar.php";
     }
-
-    if(historial){
-        localStorage.setItem("historial", historial);
-    }
-
-    contador = 1;
-    window.location.href = "index.php";
 }
 
-window.onload = function(){
-    cargarLista();
-
-    const urlParams = new URLSearchParams(window.location.search);
-
-    let turno = urlParams.get('turno');
-    let nombre = urlParams.get('nombre');
-    let esp = urlParams.get('esp');
-
-    if(turno){
-    imprimirTurno(turno, nombre, esp);
-
-    // 🔥 GUARDAR EN LOCALSTORAGE
-    let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-    turnos.push(turno + " - " + nombre + " - " + esp);
-    localStorage.setItem("turnos", JSON.stringify(turnos));
-}
-};
 
 function generarTurno(){
     let nombre = document.getElementById("nombre").value;
@@ -242,63 +286,96 @@ function generarTurno(){
     if(nombre=="" || edad=="" || sexo=="" || curp=="" || esp=="" || fech==""){
         alerta.style.display="block";
         msg.innerHTML="";
+        setTimeout(() => alerta.style.display="none", 4000);
         return;
     }
 
     alerta.style.display="none";
 
+    // 1. Generar Turno
     let turno = "P-" + String(contador).padStart(2,'0');
+    let fechaTicket = new Date().toLocaleDateString('es-MX');
+
+    // 2. Mostrar mensaje en pantalla (Verde)
+    msg.innerHTML = `<h3 class='fw-bold' style='color: #28a745;'>SU TURNO ES: ${turno}</h3>`;
+
+    // 3. Abrir Ventana de Impresión con ETIQUETAS
+    let ventana = window.open("", "", "width=450,height=500");
+    ventana.document.write(`
+        <html>
+        <head>
+            <style>
+                body { font-family: 'Courier New', Courier, monospace; text-align: center; padding: 20px; }
+                .titulo { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
+                .turno { font-size: 80px; font-weight: bold; margin: 15px 0; border-top: 
+                3px solid #000; border-bottom: 3px solid #000; display: inline-block; padding: 0 15px; }
+               
+                .label { font-weight: bold; }
+                .fecha { font-size: 14px; padding-top: 10px; }
+            </style>
+        </head>
+        <body>
+            <div class="titulo">S.I.G.A.M.</div>
+            <div style="font-size: 16px;"><span class="label">TURNO</div>
+            <div class="turno">${turno}</div>
+            
+            <div class="fila"><span class="label">NOMBRE:</span> ${nombre}</div>
+            <div class="fila"><span class="label">ESPECIALIDAD:</span> ${esp}</div>
+
+            <script>
+                setTimeout(() => {
+                    window.print();
+                    window.close();
+                }, 500);
+            <\/script>
+        </body>
+        </html>
+    `);
+    ventana.document.close();
+
+    // 4. Guardar en LocalStorage para la lista
     let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
     turnos.push(turno + " - " + nombre + " - " + esp);
     localStorage.setItem("turnos", JSON.stringify(turnos));
 
-    msg.innerHTML = "<h3 class='fw-bold'>SU TURNO ES: "+turno+"</h3>";
-// Abrir ventana para imprimir
-imprimirTurno(turno, nombre, esp);
-
     contador++;
-    cargarLista();
+
+    // 5. Enviar a PHP para guardar en base de datos
+    setTimeout(() => {
+        document.querySelector(".datos").submit();
+    }, 2000);
 }
+
 
 function cargarLista(){
     let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
+    let mensajeDiv = document.getElementById("mensajeTurno")
+    turnos.forEach(t => {
+        let partes = t.split(" - ");
+        let turno = partes[0];
+        let nombre = partes[1];
+        let esp = partes[2];
 
+        let item = document.createElement("li");
+
+        item.innerHTML =
+            "<span class='textoTurno'><strong>"+turno+
+            "</strong> - "+nombre+" - "+esp+"</span> "+
+            "<button onclick='modificarTurno(this)'>Modificar</button> "+
+            "<button onclick='eliminarTurno(this)'>Eliminar</button>";
+
+        listaHTML.appendChild(item);
+    });
+
+    // actualizar contador automáticamente para evitar duplicados al recargar
     if(turnos.length > 0){
         let ultimo = turnos[turnos.length - 1].split(" - ")[0];
         let num = parseInt(ultimo.split("-")[1]);
         contador = num + 1;
     }
+
 }
 
-
-
-function imprimirTurno(turno, nombre, esp, fecha){
-    let ventana = window.open('', '_blank', 'width=400,height=600');
-
-    ventana.document.write(`
-        <html>
-        <head>
-            <title>Turno</title>
-        </head>
-        <body>
-            <div class="ticket">
-                <h2>S.I.G.A.M.</h2>
-                <p><strong>Turno:</strong></p>
-                <h1>${turno}</h1>
-                <p><strong>Nombre:</strong> ${nombre}</p>
-                <p><strong>Especialidad:</strong> ${esp}</p>
-                <br>
-            </div>
-
-            <script>
-                window.print();
-            <\/script>
-        </body>
-        </html>
-    `);
-
-    ventana.document.close();
-}
 </script>
 
 </body>

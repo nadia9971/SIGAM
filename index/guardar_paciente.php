@@ -22,5 +22,5 @@ if (mysqli_query($conexion, $sql)) {
     } else {
         echo "Error: " . mysqli_error($conexion);
     }
-}
+
 ?>
