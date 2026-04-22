@@ -8,10 +8,6 @@ $db   = "bd_citas";
 $conexion = mysqli_connect($host, $user, $pass, $db, $port);
 
 if (!$conexion) {
-    $conexion = mysqli_connect($host, $user, $pass, $db);
-}
-
-if (!$conexion) {
     die("Error de conexión: " . mysqli_connect_error());
 }
 
