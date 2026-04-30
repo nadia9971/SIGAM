@@ -102,6 +102,7 @@
             max-width: 700px;
             padding: 30px;
         }
+
         header h2 {
             text-align: center;
             border-bottom: 2px solid #8a91f3;
@@ -259,18 +260,29 @@ td, th {
 
 
 <script>
-let contador = 1;
+function obtenerContador() {
+    let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
+
+    if (turnos.length === 0) return 1;
+
+    let ultimo = turnos[turnos.length - 1];
+    let numero = parseInt(ultimo.split("-")[1]);
+
+    return numero + 1;
+}
+
 
 function cerrarSesion(){
     if(confirm("¿Finalizar jornada? Los datos de hoy se enviarán al historial del Administrador.")){
         // Limpiamos los turnos del navegador (LocalStorage)
-        localStorage.clear();
-        
-        // Ejecutamos el respaldo y limpieza en la base de datos
+        localStorage.removeItem("turnos");
+        localStorage.removeItem("contadorTurno");
+
         window.location.href = "cerrar_respaldar.php";
     }
 }
-
+        
+   
 
 function generarTurno(){
     let nombre = document.getElementById("nombre").value;
@@ -293,7 +305,8 @@ function generarTurno(){
     alerta.style.display="none";
 
     // 1. Generar Turno
-    let turno = "P-" + String(contador).padStart(2,'0');
+    let contador = obtenerContador();
+let turno = "P-" + String(contador).padStart(2,'0');
     let fechaTicket = new Date().toLocaleDateString('es-MX');
 
     // 2. Mostrar mensaje en pantalla (Verde)
@@ -307,7 +320,7 @@ function generarTurno(){
             <style>
                 body { font-family: 'Courier New', Courier, monospace; text-align: center; padding: 20px; }
                 .titulo { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
-                .turno { font-size: 80px; font-weight: bold; margin: 15px 0; border-top: 
+                .turno-grande { font-size: 80px; font-weight: bold; margin: 15px 0; border-top: 
                 3px solid #000; border-bottom: 3px solid #000; display: inline-block; padding: 0 15px; }
                
                 .label { font-weight: bold; }
@@ -317,7 +330,7 @@ function generarTurno(){
         <body>
             <div class="titulo">S.I.G.A.M.</div>
             <div style="font-size: 16px;"><span class="label">TURNO</div>
-            <div class="turno">${turno}</div>
+            <div class="turno-grande">${turno}</div>
             
             <div class="fila"><span class="label">NOMBRE:</span> ${nombre}</div>
             <div class="fila"><span class="label">ESPECIALIDAD:</span> ${esp}</div>
@@ -338,7 +351,7 @@ function generarTurno(){
     turnos.push(turno + " - " + nombre + " - " + esp);
     localStorage.setItem("turnos", JSON.stringify(turnos));
 
-    contador++;
+    
 
     // 5. Enviar a PHP para guardar en base de datos
     setTimeout(() => {

@@ -78,7 +78,7 @@
         <div class="card-body p-4">
             
             <div class="mb-4 text-center border-bottom pb-3">
-                <h5 class="mb-3 fw-bold">Ver historial de turnos</h5>
+                <h5 class="mb-3 fw-bold">Historial de turnos Atendidos</h5>
                 <button class="btn btn-custom px-4" onclick="verHistorial()">
                     <i class="fa-solid "></i>Ver Historial
                 </button>

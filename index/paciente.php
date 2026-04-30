@@ -90,14 +90,15 @@
 
         <div class="main-content">
             <div class="sidebar-espera">
-                <h3 class="text-center fw-bold mb-4" style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">PRÓXIMOS</h3>
+                <h3 class="text-center fw-bold mb-4"
+                 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">EN ESPERA</h3>
                 <ul id="listaEspera">
                     </ul>
             </div>
 
             <div class="current-turn-area">
-                <span class="label-grande ">Turno Actual</span>
-                <div id="turnoPrincipal">SIN TURNOS</div>
+                <span class="label-grande ">TURNO SIGUIENTE</span>
+                <div id="turnoPrincipal">SIN TURNOS EN ESPERA</div>
                 <div id="mensajePaciente" style="font-size: 2rem; color: #888;">Por favor, espere su llamado</div>
             </div>
         </div>
