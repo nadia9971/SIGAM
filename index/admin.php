@@ -160,7 +160,7 @@ function consultarTurno(){
 
 // REPORTE 
 function generarReporte(){
-    let historial = JSON.parse(localStorage.getItem("HISTORIAL")) || [];
+    let historial = JSON.parse(localStorage.getItem("historial")) || [];
 
     let total = historial.length;
     let atendidos = 0;
