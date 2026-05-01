@@ -18,7 +18,8 @@ if (isset($_POST['editar_nombre'])) {
 }
 
 // Consultar pacientes
-$sql = "SELECT * FROM pacientes ORDER BY fecha_nacimiento DESC"; 
+// AGREGUE PRIORIDAD EN ESTE SELECT PARA QUE SEA DE LOS PRIMEROS EN SALIR:
+$sql = "SELECT curp, nombre_completo, edad, especialidad, prioridad, estado FROM pacientes ORDER BY prioridad DESC, curp ASC";
 $resultado = mysqli_query($conexion, $sql);
 ?>
 
@@ -45,48 +46,63 @@ $resultado = mysqli_query($conexion, $sql);
     </div>
 
     <div class="table-responsive">
-        <table class="table table-hover align-middle text-center">
-            <thead class="table-light">
-                <tr>
-                    <th>CURP</th>
-                    <th>Paciente</th>
-                    <th>Edad</th>
-                    <th>Especialidad</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php 
-                if (mysqli_num_rows($resultado) > 0) {
-                    while($row = mysqli_fetch_assoc($resultado)) { 
-                ?>
-                <tr>
-                    <td class="fw-bold"><?php echo $row['curp']; ?></td>
-                    <td><?php echo $row['nombre_completo']; ?></td>
-                    <td><?php echo $row['edad']; ?></td>
-                    <td><?php echo $row['especialidad']; ?></td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary" 
-                                onclick="editarPaciente('<?php echo $row['curp']; ?>', '<?php echo $row['nombre_completo']; ?>')">
-                            <i class="fa-solid fa-pencil"></i>
-                        </button>
+    <table class="table table-hover align-middle text-center">
+        <thead class="table-light">
+            <tr>
+                <th>Prioridad</th> <th>CURP</th>
+                <th>Paciente</th>
+                <th>Edad</th>
+                <th>Especialidad</th>
+                <th>Estado</th>    <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
 
-                        <a href="lista_turno.php?eliminar=<?php echo $row['curp']; ?>" 
-                           class="btn btn-sm btn-outline-danger" 
-                           onclick="return confirm('¿Seguro que desea eliminar este turno?')">
-                            <i class="fa-solid fa-trash"></i>
-                        </a>
-                    </td>
-                </tr>
-                <?php 
-                    } 
-                } else {
-                    echo "<tr><td colspan='5' class='text-muted'>No hay registros en la base de datos</td></tr>";
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
+            <?php 
+            if (mysqli_num_rows($resultado) > 0) {
+                while($row = mysqli_fetch_assoc($resultado)) { 
+                    // Definimos el color según PRIORIDAD
+                    $colorPrioridad = ($row['prioridad'] == 'Urgente') ? 'bg-danger' : 'bg-success';
+            ?>
+            <tr class="<?php echo ($row['prioridad'] == 'Urgente') ? 'table-danger' : ''; ?>">
+                <td>
+                    <span class="badge <?php echo $colorPrioridad; ?>">
+                        <?php echo $row['prioridad']; ?>
+                    </span>
+                </td>
+                <td class="fw-bold"><?php echo $row['curp']; ?></td>
+                <td><?php echo $row['nombre_completo']; ?></td>
+                <td><?php echo $row['edad']; ?></td>
+                <td><?php echo $row['especialidad']; ?></td>
+                <td>
+                    <span class="badge bg-secondary"><?php echo $row['estado']; ?></span>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" 
+                            onclick="editarPaciente('<?php echo $row['curp']; ?>', '<?php echo $row['nombre_completo']; ?>')">
+                        <i class="fa-solid fa-pencil"></i>
+                    </button>
+
+                    <a href="lista_turno.php?eliminar=<?php echo $row['curp']; ?>" 
+                       class="btn btn-sm btn-outline-danger" 
+                       onclick="return confirm('¿Seguro que desea eliminar este turno?')">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            <?php 
+                } 
+                
+            } else {
+                echo "<tr><td colspan='7' class='text-muted'>No hay registros en la base de datos</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
+
+
+
 </div>
 
 <form id="formEditar" method="POST" style="display:none;">
@@ -109,95 +125,3 @@ function editarPaciente(curp, nombreActual) {
 
 </body>
 </html>
-
-
-
-
-<script>
-function cargarTurnos(){
-    let tabla = document.getElementById("tablaTurnos");
-    let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-
-    tabla.innerHTML = "";
-
-    if(turnos.length === 0){
-        tabla.innerHTML = `
-            <tr>
-                <td colspan="4" class="text-center">No hay turnos registrados</td>
-            </tr>
-        `;
-        return;
-    }
-
-    turnos.forEach((t, index) => {
-        let partes = t.split(" - ");
-        let turno = partes[0] || "";
-        let nombre = partes[1] || "";
-        let esp = partes[2] || "";
-
-        tabla.innerHTML += `
-            <tr>
-                <td><strong>${turno}</strong></td>
-                <td>${nombre}</td>
-                <td>${esp}</td>
-                <td>
-                    <button class="btn btn-sm btn-secondary me-1" onclick="modificar(${index})">
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
-                   
-                    <button class="btn btn-sm btn-danger" onclick="eliminar(${index})">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
-    });
-}
-
-function eliminar(index){
-    let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-    turnos.splice(index,1);
-    localStorage.setItem("turnos", JSON.stringify(turnos));
-    cargarTurnos();
-}
-
-function modificar(index){
-    let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-
-    let partes = turnos[index].split(" - ");
-    let turno = partes[0];
-    let esp = partes[2];
-
-    let nuevoNombre = prompt("Nuevo nombre:", partes[1]);
-
-    if(nuevoNombre){
-        turnos[index] = turno + " - " + nuevoNombre + " - " + esp;
-        localStorage.setItem("turnos", JSON.stringify(turnos));
-        cargarTurnos();
-    }
-}
-
-function atender(index){
-    let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-    let historial = JSON.parse(localStorage.getItem("historial")) || [];
-
-    let registro = turnos[index] + " - ATENDIDO";
-
-    historial.push(registro);
-
-    localStorage.setItem("historial", JSON.stringify(historial));
-
-    turnos.splice(index,1);
-    localStorage.setItem("turnos", JSON.stringify(turnos));
-
-    cargarTurnos();
-}
-
-window.onload = cargarTurnos;
-</script>
-
-</body>
-</html>
-        </table>
-    </div>
-</div>

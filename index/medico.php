@@ -1,3 +1,18 @@
+// Al inicio de tu archivo médico (antes del <html>)
+<?php
+include 'conexion.php';
+// Buscamos al paciente con mayor prioridad que esté pendiente
+$sql = "SELECT curp, nombre_completo, prioridad FROM pacientes 
+        WHERE estado = 'Pendiente' 
+        ORDER BY FIELD(prioridad, 'Urgente', 'Normal') ASC, curp ASC LIMIT 1";
+$res = mysqli_query($conexion, $sql);
+$paciente = mysqli_fetch_assoc($res);
+?>
+
+// Y en el HTML, muestras el resultado:
+<h2 id="turnoActual"><?php echo $paciente ? $paciente['prioridad'] : "SIN TURNO"; ?></h2>
+<span id="nombreActual"><?php echo $paciente ? $paciente['nombre_completo'] : "---"; ?></span>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>

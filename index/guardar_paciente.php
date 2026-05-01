@@ -9,13 +9,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sexo   = $_POST['sexo'];
     $esp    = $_POST['especialidad'];
 
-    // INSERT con los nombres exactos de tu imagen
-    $sql = "INSERT INTO pacientes (curp, nombre_completo, edad, sexo, fecha_nacimiento, especialidad) 
-            VALUES ('$curp', '$nombre', '$edad', '$sexo', '$fecha', '$esp')";
+    
+$prioridad = $_POST['prioridad']; //mandada a llamar
 
-    // ... después de que mysqli_query sea exitoso:
+// INSERT CON PRIORIDAD 
+$sql = "INSERT INTO pacientes (curp, nombre_completo, edad, especialidad, prioridad, estado) 
+        VALUES ('$curp', '$nombre', '$edad', '$especialidad', '$prioridad', 'Pendiente')";
+
+   
 if (mysqli_query($conexion, $sql)) {
-    // Redirige a recepcion.php pasando los datos para que el JS los imprima
     header("Location: recepcion.php?imprimir=1&nombre=" . urlencode($nombre) . "&esp=" . urlencode($esp));
     exit();
 }

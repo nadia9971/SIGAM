@@ -230,6 +230,13 @@ td, th {
         <option value="Nutrición">Nutrición</option>
     </select>
 
+    
+    <select name="prioridad" id="prioridad" class="form-select" required>/* AQUI SE PONE LA PRIORIDAD  */
+    <option value="Normal">Prioridad: Normal</option>
+    <option value="Urgente">Prioridad: Urgente (Atención Inmediata)</option>
+</select>
+
+
     <button type="button" class="btn btn-primary-custom mt-2" onclick="generarTurno()">
     Generar Turno</button>
 
@@ -291,6 +298,9 @@ function generarTurno(){
     let curp = document.getElementById("curp").value;
     let esp = document.getElementById("especialidad").value;
     let fech = document.getElementById("fecha").value;
+    //AÑADIMOS PRIORIDAD
+let prioridad = document.getElementById("prioridad").value;
+
 
     let alerta = document.getElementById("alertaIncompletos");
     let msg = document.getElementById("mensajeTurno");
@@ -304,17 +314,20 @@ function generarTurno(){
 
     alerta.style.display="none";
 
-    // 1. Generar Turno
+    // Generar Turno
     let contador = obtenerContador();
 let turno = "P-" + String(contador).padStart(2,'0');
     let fechaTicket = new Date().toLocaleDateString('es-MX');
 
-    // 2. Mostrar mensaje en pantalla (Verde)
+    // Mostrar mensaje en pantalla
     msg.innerHTML = `<h3 class='fw-bold' style='color: #28a745;'>SU TURNO ES: ${turno}</h3>`;
 
-    // 3. Abrir Ventana de Impresión con ETIQUETAS
+    // Abrir Ventana YA INCLUYE LA PRIORIDAD
     let ventana = window.open("", "", "width=450,height=500");
     ventana.document.write(`
+    
+<div class="fila" style="color: ${prioridad === 'Urgente' ? 'red' : 'black'}"></div>
+    <span class="label">PRIORIDAD:</span> ${prioridad}
         <html>
         <head>
             <style>
@@ -346,14 +359,14 @@ let turno = "P-" + String(contador).padStart(2,'0');
     `);
     ventana.document.close();
 
-    // 4. Guardar en LocalStorage para la lista
+    // Guardar en LocalStorage para la lista
     let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
     turnos.push(turno + " - " + nombre + " - " + esp);
     localStorage.setItem("turnos", JSON.stringify(turnos));
 
     
 
-    // 5. Enviar a PHP para guardar en base de datos
+    //Envia a PHP para guardar en base de datos
     setTimeout(() => {
         document.querySelector(".datos").submit();
     }, 2000);
