@@ -97,9 +97,9 @@
             </div>
 
             <div class="current-turn-area">
-                <span class="label-grande ">TURNO SIGUIENTE</span>
+                <span class="label-grande ">TURNO</span>
                 <div id="turnoPrincipal">SIN TURNOS EN ESPERA</div>
-                <div id="mensajePaciente" style="font-size: 2rem; color: #888;">Por favor, espere su llamado</div>
+                <div id="mensajePaciente" style="font-size: 2rem; color: #888;"></div>
             </div>
         </div>
     </div>
@@ -117,6 +117,8 @@
                 let actual = turnos[0].split(" - ");
                 principal.innerHTML = actual[0];
                 principal.style.color = "#28a745"; 
+
+                mostrarConsultorio(turnos[0]);
 
                 // Próximos turnos 
                 listaEspera.innerHTML = "";
@@ -140,6 +142,32 @@
 
         setInterval(actualizarPantalla, 2000);
         window.onload = actualizarPantalla;
+
+
+        // NUEVA FUNCIÓN (NO TOCA TU CÓDIGO)
+function mostrarConsultorio(turnoTexto){
+    let consultorio = "Sin asignar";
+
+    if(turnoTexto.includes("Pediatría")){
+        consultorio = 1;
+    } else if(turnoTexto.includes("Médico General")){
+        consultorio = 2;
+    } else if(turnoTexto.includes("Nutrición")){
+        consultorio = 3;
+    }
+
+    // Extraer número
+    let numero = turnoTexto.match(/\d+/); 
+    numero = numero ? numero[0] : "00";
+
+    let turnoFormateado = "P-" + String(numero).padStart(2, '0');
+
+    // agregar numero de consultorio
+    document.getElementById("turnoPrincipal").innerHTML = turnoFormateado;
+    document.getElementById("mensajePaciente").innerHTML = 
+        "Diríjase al consultorio " + consultorio +
+         "<br><span style='font-size:1.5rem; color:#dc3545; font-weight:bold;'>Por favor, espere su llamado</span>";
+}
     </script>
 </body>
 </html>
