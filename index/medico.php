@@ -128,30 +128,20 @@ let turnoActual = null;
 
 //automático al iniciar la página
 window.onload = function() {
-    let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
 
-    if (turnos.length === 0) {
+    let actualRaw = localStorage.getItem("turnoActual");
+    let actual = actualRaw ? JSON.parse(actualRaw) : null;
+
+    if (actual) {
+        turnoActual = actual;
+
+        document.getElementById("turnoActual").innerText = actual.turno;
+        document.getElementById("nombreActual").innerText =
+            actual.nombre + " (" + actual.prioridad + ")";
+    } else {
         document.getElementById("turnoActual").innerText = "SIN TURNO";
         document.getElementById("nombreActual").innerText = "---";
-        return;
     }
-
-    // 🔥 ORDENAR POR PRIORIDAD
-    turnos.sort((a, b) => {
-        if (a.prioridad === "Urgente" && b.prioridad === "Normal") return -1;
-        if (a.prioridad === "Normal" && b.prioridad === "Urgente") return 1;
-        return 0;
-    });
-
-    turnoActual = turnos.shift();
-
-    // 🔥 GUARDAR EL ACTUAL
-    localStorage.setItem("turnoActual", JSON.stringify(turnoActual));
-    localStorage.setItem("turnos", JSON.stringify(turnos));
-
-    document.getElementById("turnoActual").innerText = turnoActual.turno;
-    document.getElementById("nombreActual").innerText =
-        turnoActual.nombre + " (" + turnoActual.prioridad + ")";
 };
 
 
@@ -187,23 +177,29 @@ function llamarTurno() {
 
 // FINALIZAR TURNO
 function finalizarTurno() {
- if (turnoActual == null) {
- alert("SIN TURNOS EN ESPERA");
- return;
+    if (turnoActual == null) {
+        alert("SIN TURNOS EN ESPERA");
+        return;
+    }
+
+    alert("TURNO Finalizado");
+
+    let historial = JSON.parse(localStorage.getItem("historial")) || [];
+
+    let turnoFinal = turnoActual.turno + " - " + turnoActual.nombre + " - " + turnoActual.prioridad + " - ATENDIDO";
+    historial.push(turnoFinal);
+
+    localStorage.setItem("historial", JSON.stringify(historial));
+
+    // 🔥 ESTA ES LA CLAVE
+    localStorage.removeItem("turnoActual");
+
+    document.getElementById("turnoActual").innerText = "SIN TURNO";
+    document.getElementById("nombreActual").innerText = "---";
+
+    turnoActual = null;
 }
 
- alert("TURNO Finalizado");
-
- let historial = JSON.parse(localStorage.getItem("historial")) || [];
- let turnoFinal = turnoActual.turno + " - " + turnoActual.nombre + " - " + turnoActual.prioridad + " - ATENDIDO";
- historial.push(turnoFinal);
-
- localStorage.setItem("historial", JSON.stringify(historial));
-document.getElementById("turnoActual").innerText = "SIN TURNO";
- document.getElementById("nombreActual").innerText = "---";
-
- turnoActual = null;
-}
 </script>
 
 </body>

@@ -176,6 +176,12 @@ function actualizarPantalla() {
         mostrarConsultorio(actual);
     }
 
+} else {
+
+    // 🔥 ESTE ES EL NUEVO
+    principal.innerHTML = "---";
+    principal.style.color = "#fe0505";
+    document.getElementById("mensajePaciente").innerHTML = "";
 }
 
 
