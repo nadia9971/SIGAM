@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+    <audio id="sonidoUrgente" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 <head>
     <meta charset="UTF-8">
     <title>S.I.G.A.M. - Pantalla de Turnos</title>
@@ -79,6 +80,27 @@
             margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+
+
+
+
+        @keyframes parpadeo {//URGENTES
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+.urgente {
+    color: #dc3545 !important;
+    animation: parpadeo 1s infinite;
+}
+
+.mensaje-urgente {
+    color: #dc3545;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
     </style>
 </head>
 <body>
@@ -98,75 +120,116 @@
 
             <div class="current-turn-area">
                 <span class="label-grande ">TURNO</span>
-                <div id="turnoPrincipal">SIN TURNOS EN ESPERA</div>
+                <div id="turnoPrincipal">---</div>
                 <div id="mensajePaciente" style="font-size: 2rem; color: #888;"></div>
             </div>
         </div>
     </div>
 
     <script>
-        function actualizarPantalla() {
-            const turnosRaw = localStorage.getItem("turnos");
-            const turnos = turnosRaw ? JSON.parse(turnosRaw) : [];
-            
-            const principal = document.getElementById("turnoPrincipal");
-            const listaEspera = document.getElementById("listaEspera");
 
-            if (turnos.length > 0) {
-                // Turno actual 
-                let actual = turnos[0].split(" - ");
-                principal.innerHTML = actual[0];
-                principal.style.color = "#28a745"; 
+function actualizarPantalla() {
+    const turnosRaw = localStorage.getItem("turnos");
+    let turnos = turnosRaw ? JSON.parse(turnosRaw) : [];
 
-                mostrarConsultorio(turnos[0]);
+    const principal = document.getElementById("turnoPrincipal");
+    const listaEspera = document.getElementById("listaEspera");
 
-                // Próximos turnos 
-                listaEspera.innerHTML = "";
-                let proximos = turnos.slice(1, 6); 
-                
-                if(proximos.length > 0) {
-                    proximos.forEach(t => {
-                        let li = document.createElement("li");
-                        li.textContent = t.split(" - ")[0];
-                        listaEspera.appendChild(li);
-                    });
-                } else {
-                    listaEspera.innerHTML = "<p class='text-center text-muted'>No hay más turnos en espera</p>";
-                }
-            } else {
-                principal.innerHTML = "---";
-                principal.style.color = "#fe0505"; 
-                listaEspera.innerHTML = "";
-            }
+    // 🔥 OBTENER TURNO ACTUAL
+    let actualRaw = localStorage.getItem("turnoActual");
+    let actual = actualRaw ? JSON.parse(actualRaw) : null;
+
+    // 🔥 ORDENAR LISTA DE ESPERA
+    turnos.sort((a, b) => {
+        if (a.prioridad === "Urgente" && b.prioridad === "Normal") return -1;
+        if (a.prioridad === "Normal" && b.prioridad === "Urgente") return 1;
+        return 0;
+    });
+
+    // 🔥 MOSTRAR TURNO ACTUAL
+    if (actual) {
+
+    principal.innerHTML = actual.turno;
+
+    // 🔥 SI ES URGENTE
+    if (actual.prioridad === "Urgente") {
+
+        principal.classList.add("urgente");
+
+        // 🔥 SONIDO SOLO UNA VEZ
+        if (!window.sonando) {
+            document.getElementById("sonidoUrgente").play();
+            window.sonando = true;
         }
+
+        // 🔥 MOSTRAR CONSULTORIO + ALERTA
+        mostrarConsultorio(actual);
+
+        document.getElementById("mensajePaciente").innerHTML =
+            "🚨 PACIENTE URGENTE 🚨<br>Diríjase inmediatamente al consultorio";
+
+    } else {
+
+        principal.classList.remove("urgente");
+        window.sonando = false; // 🔥 reset para próximos urgentes
+
+        mostrarConsultorio(actual);
+    }
+
+}
+
+
+
+    // 🔥 LISTA DE ESPERA
+    listaEspera.innerHTML = "";
+
+    let proximos = turnos.slice(0, 5); // 🔥 AQUÍ CAMBIA
+
+    if (proximos.length > 0) {
+        proximos.forEach(t => {
+            let li = document.createElement("li");
+
+            li.textContent = t.turno;
+
+            if (t.prioridad === "Urgente") {
+                li.style.backgroundColor = "#dc3545";
+            }
+
+            listaEspera.appendChild(li);
+        });
+    } else {
+        listaEspera.innerHTML = "<p class='text-center text-muted'>No hay más turnos en espera</p>";
+    }
+}
+
+
+         
 
         setInterval(actualizarPantalla, 2000);
         window.onload = actualizarPantalla;
 
 
         // NUEVA FUNCIÓN (NO TOCA TU CÓDIGO)
-function mostrarConsultorio(turnoTexto){
+function mostrarConsultorio(turnoObj){
     let consultorio = "Sin asignar";
 
-    if(turnoTexto.includes("Pediatría")){
+    if(turnoObj.especialidad === "Pediatría"){
         consultorio = 1;
-    } else if(turnoTexto.includes("Médico General")){
+    } else if(turnoObj.especialidad === "Médico General"){
         consultorio = 2;
-    } else if(turnoTexto.includes("Nutrición")){
+    } else if(turnoObj.especialidad === "Nutrición"){
         consultorio = 3;
     }
 
-    // Extraer número
-    let numero = turnoTexto.match(/\d+/); 
+    let numero = turnoObj.turno.match(/\d+/);
     numero = numero ? numero[0] : "00";
 
     let turnoFormateado = "P-" + String(numero).padStart(2, '0');
 
-    // agregar numero de consultorio
     document.getElementById("turnoPrincipal").innerHTML = turnoFormateado;
     document.getElementById("mensajePaciente").innerHTML = 
         "Diríjase al consultorio " + consultorio +
-         "<br><span style='font-size:1.5rem; color:#dc3545; font-weight:bold;'>Por favor, espere su llamado</span>";
+        "<br><span style='font-size:1.5rem; color:#dc3545; font-weight:bold;'>Por favor, espere su llamado</span>";
 }
     </script>
 </body>

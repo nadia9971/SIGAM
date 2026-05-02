@@ -231,7 +231,8 @@ td, th {
     </select>
 
     
-    <select name="prioridad" id="prioridad" class="form-select" required>/* AQUI SE PONE LA PRIORIDAD  */
+   <!-- AQUI SE PONE LA PRIORIDAD -->
+<select name="prioridad" id="prioridad" class="form-select" required>
     <option value="Normal">Prioridad: Normal</option>
     <option value="Urgente">Prioridad: Urgente (Atención Inmediata)</option>
 </select>
@@ -273,9 +274,10 @@ function obtenerContador() {
     if (turnos.length === 0) return 1;
 
     let ultimo = turnos[turnos.length - 1];
-    let numero = parseInt(ultimo.split("-")[1]);
+    let numero = parseInt(ultimo.turno.split("-")[1]);
 
     return numero + 1;
+    
 }
 
 
@@ -326,8 +328,7 @@ let turno = "P-" + String(contador).padStart(2,'0');
     let ventana = window.open("", "", "width=450,height=500");
     ventana.document.write(`
     
-<div class="fila" style="color: ${prioridad === 'Urgente' ? 'red' : 'black'}"></div>
-    <span class="label">PRIORIDAD:</span> ${prioridad}
+
         <html>
         <head>
             <style>
@@ -348,6 +349,11 @@ let turno = "P-" + String(contador).padStart(2,'0');
             <div class="fila"><span class="label">NOMBRE:</span> ${nombre}</div>
             <div class="fila"><span class="label">ESPECIALIDAD:</span> ${esp}</div>
 
+            <div class="fila" style="color: ${prioridad === 'Urgente' ? 'red' : 'black'}">
+    <span class="label">PRIORIDAD:</span> ${prioridad}
+</div>
+
+
             <script>
                 setTimeout(() => {
                     window.print();
@@ -359,9 +365,14 @@ let turno = "P-" + String(contador).padStart(2,'0');
     `);
     ventana.document.close();
 
-    // Guardar en LocalStorage para la lista
+    // PRIORIDAD
     let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-    turnos.push(turno + " - " + nombre + " - " + esp);
+    turnos.push({
+    turno: turno,
+    nombre: nombre,
+    especialidad: esp,
+    prioridad: prioridad
+});
     localStorage.setItem("turnos", JSON.stringify(turnos));
 
     
@@ -375,33 +386,23 @@ let turno = "P-" + String(contador).padStart(2,'0');
 
 function cargarLista(){
     let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-    let mensajeDiv = document.getElementById("mensajeTurno")
-    turnos.forEach(t => {
-        let partes = t.split(" - ");
-        let turno = partes[0];
-        let nombre = partes[1];
-        let esp = partes[2];
+    let listaHTML = document.getElementById("listaTurnos");
 
+    listaHTML.innerHTML = "";
+
+    turnos.forEach(t => {
         let item = document.createElement("li");
 
         item.innerHTML =
-            "<span class='textoTurno'><strong>"+turno+
-            "</strong> - "+nombre+" - "+esp+"</span> "+
-            "<button onclick='modificarTurno(this)'>Modificar</button> "+
-            "<button onclick='eliminarTurno(this)'>Eliminar</button>";
+            "<span class='textoTurno'><strong>"+t.turno+
+            "</strong> - "+t.nombre+" - "+t.especialidad+
+            " ("+t.prioridad+")</span>";
 
         listaHTML.appendChild(item);
     });
-
-    // actualizar contador automáticamente para evitar duplicados al recargar
-    if(turnos.length > 0){
-        let ultimo = turnos[turnos.length - 1].split(" - ")[0];
-        let num = parseInt(ultimo.split("-")[1]);
-        contador = num + 1;
-    }
-
 }
 
+window.onload = cargarLista;
 </script>
 
 </body>
