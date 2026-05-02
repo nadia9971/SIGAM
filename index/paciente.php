@@ -95,6 +95,10 @@
     animation: parpadeo 1s infinite;
 }
 
+.normal {
+    color: #28a745; /* verde */
+}
+
 .mensaje-urgente {
     color: #dc3545;
     font-weight: bold;
@@ -154,7 +158,8 @@ function actualizarPantalla() {
     // 🔥 SI ES URGENTE
     if (actual.prioridad === "Urgente") {
 
-        principal.classList.add("urgente");
+    principal.classList.remove("normal");
+principal.classList.add("urgente");
 
         // 🔥 SONIDO SOLO UNA VEZ
         if (!window.sonando) {
@@ -163,24 +168,24 @@ function actualizarPantalla() {
         }
 
         // 🔥 MOSTRAR CONSULTORIO + ALERTA
-        mostrarConsultorio(actual);
-
-        document.getElementById("mensajePaciente").innerHTML =
-            "🚨 PACIENTE URGENTE 🚨<br>Diríjase inmediatamente al consultorio";
+        mostrarConsultorio(actual, true);
 
     } else {
 
         principal.classList.remove("urgente");
+        principal.classList.add("normal");
         window.sonando = false; // 🔥 reset para próximos urgentes
 
-        mostrarConsultorio(actual);
+        mostrarConsultorio(actual, false);
     }
 
 } else {
 
     // 🔥 ESTE ES EL NUEVO
     principal.innerHTML = "---";
-    principal.style.color = "#fe0505";
+    principal.style.color = "";
+    principal.classList.remove("urgente");
+principal.classList.remove("normal");
     document.getElementById("mensajePaciente").innerHTML = "";
 }
 
@@ -216,7 +221,7 @@ function actualizarPantalla() {
 
 
         // NUEVA FUNCIÓN (NO TOCA TU CÓDIGO)
-function mostrarConsultorio(turnoObj){
+function mostrarConsultorio(turnoObj, esUrgente = false){
     let consultorio = "Sin asignar";
 
     if(turnoObj.especialidad === "Pediatría"){
@@ -233,9 +238,16 @@ function mostrarConsultorio(turnoObj){
     let turnoFormateado = "P-" + String(numero).padStart(2, '0');
 
     document.getElementById("turnoPrincipal").innerHTML = turnoFormateado;
-    document.getElementById("mensajePaciente").innerHTML = 
-        "Diríjase al consultorio " + consultorio +
-        "<br><span style='font-size:1.5rem; color:#dc3545; font-weight:bold;'>Por favor, espere su llamado</span>";
+
+    if(esUrgente){
+        document.getElementById("mensajePaciente").innerHTML =
+            "🚨 PACIENTE URGENTE 🚨<br>" +
+"<span class='mensaje-urgente'>Diríjase inmediatamente al consultorio " + consultorio + "</span>";
+    } else {
+        document.getElementById("mensajePaciente").innerHTML = 
+            "Diríjase al consultorio " + consultorio +
+            "<br><span style='font-size:1.5rem; color:#dc3545; font-weight:bold;'>Por favor, espere su llamado</span>";
+    }
 }
     </script>
 </body>

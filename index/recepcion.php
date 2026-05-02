@@ -332,6 +332,8 @@ let turno = "P-" + String(contador).padStart(2,'0');
         <html>
         <head>
             <style>
+
+
                 body { font-family: 'Courier New', Courier, monospace; text-align: center; padding: 20px; }
                 .titulo { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
                 .turno-grande { font-size: 80px; font-weight: bold; margin: 15px 0; border-top: 
@@ -359,6 +361,8 @@ let turno = "P-" + String(contador).padStart(2,'0');
                     window.print();
                     window.close();
                 }, 500);
+
+                
             <\/script>
         </body>
         </html>
@@ -394,15 +398,14 @@ function cargarLista(){
         let item = document.createElement("li");
 
         item.innerHTML =
-            "<span class='textoTurno'><strong>"+t.turno+
-            "</strong> - "+t.nombre+" - "+t.especialidad+
-            " ("+t.prioridad+")</span>";
+    "<span class='textoTurno'>"+t.nombre+" - "+t.especialidad+
+    " ("+t.prioridad+")</span>";
 
         listaHTML.appendChild(item);
     });
 }
 
-window.onload = cargarLista;
+// window.onload = cargarLista;
 </script>
 
 </body>
