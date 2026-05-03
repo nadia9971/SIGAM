@@ -155,7 +155,7 @@ function llamarTurno() {
         return;
     }
 
-    // 🔥 ORDENAR POR PRIORIDAD
+    // ORDENAR POR PRIORIDAD
     turnos.sort((a, b) => {
         if (a.prioridad === "Urgente" && b.prioridad === "Normal") return -1;
         if (a.prioridad === "Normal" && b.prioridad === "Urgente") return 1;
@@ -164,7 +164,7 @@ function llamarTurno() {
 
     turnoActual = turnos.shift();
 
-    // 🔥 GUARDAR
+    //GUARDAR
     localStorage.setItem("turnoActual", JSON.stringify(turnoActual));
     localStorage.setItem("turnos", JSON.stringify(turnos));
 
@@ -186,12 +186,13 @@ function finalizarTurno() {
 
     let historial = JSON.parse(localStorage.getItem("historial")) || [];
 
-    let turnoFinal = turnoActual.turno + " - " + turnoActual.nombre + " - " + turnoActual.prioridad + " - ATENDIDO";
+    let turnoFinal = turnoActual.turno + " - " + turnoActual.nombre + " - " 
+    + turnoActual.prioridad + " - ATENDIDO";
     historial.push(turnoFinal);
 
     localStorage.setItem("historial", JSON.stringify(historial));
 
-    // 🔥 ESTA ES LA CLAVE
+    
     localStorage.removeItem("turnoActual");
 
     document.getElementById("turnoActual").innerText = "SIN TURNO";
