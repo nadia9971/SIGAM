@@ -139,49 +139,45 @@ function actualizarPantalla() {
     const principal = document.getElementById("turnoPrincipal");
     const listaEspera = document.getElementById("listaEspera");
 
-    // 🔥 OBTENER TURNO ACTUAL
+    // OBTENER TURNO ACTUAL
     let actualRaw = localStorage.getItem("turnoActual");
     let actual = actualRaw ? JSON.parse(actualRaw) : null;
 
-    // 🔥 ORDENAR LISTA DE ESPERA
+    // ORDENAR LISTA DE ESPERA
     turnos.sort((a, b) => {
         if (a.prioridad === "Urgente" && b.prioridad === "Normal") return -1;
         if (a.prioridad === "Normal" && b.prioridad === "Urgente") return 1;
         return 0;
     });
 
-    // 🔥 MOSTRAR TURNO ACTUAL
+    // MOSTRAR TURNO ACTUAL
     if (actual) {
 
     principal.innerHTML = actual.turno;
 
-    // 🔥 SI ES URGENTE
+    // SI ES URGENTE
     if (actual.prioridad === "Urgente") {
 
     principal.classList.remove("normal");
 principal.classList.add("urgente");
 
-        // 🔥 SONIDO SOLO UNA VEZ
-        if (!window.sonando) {
-            document.getElementById("sonidoUrgente").play();
-            window.sonando = true;
-        }
+        
 
-        // 🔥 MOSTRAR CONSULTORIO + ALERTA
+        // MOSTRAR CONSULTORIO + ALERTA
         mostrarConsultorio(actual, true);
 
     } else {
 
         principal.classList.remove("urgente");
         principal.classList.add("normal");
-        window.sonando = false; // 🔥 reset para próximos urgentes
+        window.sonando = false; // reset para próximos urgentes
 
         mostrarConsultorio(actual, false);
     }
 
 } else {
 
-    // 🔥 ESTE ES EL NUEVO
+    //  adaptado a URGENTE 
     principal.innerHTML = "---";
     principal.style.color = "";
     principal.classList.remove("urgente");
@@ -191,10 +187,10 @@ principal.classList.remove("normal");
 
 
 
-    // 🔥 LISTA DE ESPERA
+    //LISTA DE ESPERA
     listaEspera.innerHTML = "";
 
-    let proximos = turnos.slice(0, 5); // 🔥 AQUÍ CAMBIA
+    let proximos = turnos.slice(0, 5); //AQUÍ CAMBIA
 
     if (proximos.length > 0) {
         proximos.forEach(t => {
@@ -220,7 +216,7 @@ principal.classList.remove("normal");
         window.onload = actualizarPantalla;
 
 
-        // NUEVA FUNCIÓN (NO TOCA TU CÓDIGO)
+        // NUEVA FUNCIÓN URGEENTE
 function mostrarConsultorio(turnoObj, esUrgente = false){
     let consultorio = "Sin asignar";
 

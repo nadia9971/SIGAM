@@ -5,7 +5,7 @@ include 'conexion.php';
 $sql_respaldo = "INSERT INTO historial_pacientes SELECT * FROM pacientes";
 
 if (mysqli_query($conexion, $sql_respaldo)) {
-    // 2. Una vez respaldados, ahora sí borramos la tabla de recepción
+    // 2. Una vez respaldado
     $sql_limpiar = "DELETE FROM pacientes";
     mysqli_query($conexion, $sql_limpiar);
 

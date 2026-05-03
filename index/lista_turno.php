@@ -19,7 +19,8 @@ if (isset($_POST['editar_nombre'])) {
 
 // Consultar pacientes
 // AGREGUE PRIORIDAD EN ESTE SELECT PARA QUE SEA DE LOS PRIMEROS EN SALIR:
-$sql = "SELECT curp, nombre_completo, edad, especialidad, prioridad, estado FROM pacientes ORDER BY prioridad DESC, curp ASC";
+$sql = "SELECT curp, nombre_completo, edad, especialidad, prioridad,
+ estado FROM pacientes ORDER BY prioridad DESC, curp ASC";
 $resultado = mysqli_query($conexion, $sql);
 ?>
 
@@ -53,7 +54,8 @@ $resultado = mysqli_query($conexion, $sql);
                 <th>Paciente</th>
                 <th>Edad</th>
                 <th>Especialidad</th>
-                <th>Estado</th>    <th>Acciones</th>
+                <th>Estado</th>   
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
