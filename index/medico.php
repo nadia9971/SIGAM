@@ -1,3 +1,27 @@
+<?php
+include 'conexion.php';
+
+// Detectamos si el JavaScript nos envió un CURP por POST
+if (isset($_POST['curp'])) {
+    $curp = mysqli_real_escape_string($conexion, $_POST['curp']);
+
+    // IMPORTANTE: Usamos el nombre de columna 'paciente_curp' que vimos en tu tabla
+    $sql = "UPDATE turnos SET estado = 'Atendido' WHERE paciente_curp = '$curp'";
+    
+    if (mysqli_query($conexion, $sql)) {
+        if (mysqli_affected_rows($conexion) > 0) {
+            echo "EXITO: Actualizado en BD";
+        } else {
+            // Si sale esto, el CURP que mandó el JS no existe en MySQL
+            echo "ERROR: El CURP '$curp' no existe en la tabla turnos";
+        }
+    } else {
+        echo "ERROR SQL: " . mysqli_error($conexion);
+    }
+    exit(); // Detenemos aquí para que no imprima el resto del HTML
+}
+?>
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -182,24 +206,29 @@ function finalizarTurno() {
         return;
     }
 
-    alert("TURNO Finalizado");
-
-    let historial = JSON.parse(localStorage.getItem("historial")) || [];
-
-    let turnoFinal = turnoActual.turno + " - " + turnoActual.nombre + " - " 
-    + turnoActual.prioridad + " - ATENDIDO";
-    historial.push(turnoFinal);
-
-    localStorage.setItem("historial", JSON.stringify(historial));
-
-    
-    localStorage.removeItem("turnoActual");
-
-    document.getElementById("turnoActual").innerText = "SIN TURNO";
-    document.getElementById("nombreActual").innerText = "---";
-
-    turnoActual = null;
+    // CAMBIO AQUÍ: En lugar de "actualizar_estado.php", pon "medico.php"
+    fetch("medico.php", { 
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "curp=" + encodeURIComponent(turnoActual.curp) 
+    })
+    .then(res => res.text())
+    .then(data => {
+        console.log("Respuesta:", data);
+        alert("Turno marcado como ATENDIDO en el sistema");
+        
+        // Limpiar la pantalla
+        localStorage.removeItem("turnoActual");
+        document.getElementById("turnoActual").innerText = "SIN TURNO";
+        document.getElementById("nombreActual").innerText = "---";
+        turnoActual = null;
+    })
+    .catch(err => console.error("Error:", err));
 }
+
+   
 
 </script>
 

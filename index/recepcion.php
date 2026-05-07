@@ -375,6 +375,7 @@ let turno = "P-" + String(contador).padStart(2,'0');
     turno: turno,
     nombre: nombre,
     especialidad: esp,
+    curp: curp,
     prioridad: prioridad
 });
     localStorage.setItem("turnos", JSON.stringify(turnos));

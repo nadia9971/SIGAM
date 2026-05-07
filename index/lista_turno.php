@@ -50,11 +50,11 @@ $resultado = mysqli_query($conexion, $sql);
     <table class="table table-hover align-middle text-center">
         <thead class="table-light">
             <tr>
-                <th>Prioridad</th> <th>CURP</th>
+                <th>Prioridad</th> 
+                <th>CURP</th>
                 <th>Paciente</th>
                 <th>Edad</th>
-                <th>Especialidad</th>
-                <th>Estado</th>   
+                <th>Especialidad</th> 
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -77,7 +77,6 @@ $resultado = mysqli_query($conexion, $sql);
                 <td><?php echo $row['edad']; ?></td>
                 <td><?php echo $row['especialidad']; ?></td>
                 <td>
-                    <span class="badge bg-secondary"><?php echo $row['estado']; ?></span>
                 </td>
                 <td>
                     <button class="btn btn-sm btn-outline-primary" 
