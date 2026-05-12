@@ -199,52 +199,52 @@ td, th {
         <h3 class='text fw-bold'>Registrar Paciente</h3>
 
         <form class="datos" action="guardar_paciente.php" method="POST">
-    <div id="alertaIncompletos" class="alert alert-danger" style="display: none;">
-        ⚠️ DATOS INCOMPLETOS
-    </div>
+            <div id="alertaIncompletos" class="alert alert-danger" style="display: none;">
+                ⚠️ DATOS INCOMPLETOS
+            </div>
 
-    <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Nombre Completo" required>
-    
-    <div class="row">
-        <div class="col-md-6">
-            <input type="number" name="edad" id="edad" class="form-control" placeholder="Edad" required>
-        </div>
-        <div class="col-md-6">
-            <input type="date" name="fecha" id="fecha" class="form-control" required>
-        </div>
-    </div>
+            <input type="text" name="nombre" id="nombre" class="form-control" 
+                   placeholder="Nombre Completo" 
+                   pattern="[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+" 
+                   title="Solo se permiten letras y espacios"
+                   oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                   required>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="number" name="edad" id="edad" class="form-control" placeholder="Edad" required>
+                </div>
+                <div class="col-md-6">
+                    <input type="date" name="fecha" id="fecha" class="form-control" required>
+                </div>
+            </div>
 
-    <input type="text" name="curp" id="curp" class="form-control" placeholder="CURP" required>
+            <input type="text" name="curp" id="curp" class="form-control" placeholder="CURP" required>
 
-    <select name="sexo" id="sexo" class="form-select" required>
-        <option value="">Seleccione Género</option>
-        <option value="Mujer">Mujer</option>
-        <option value="Hombre">Hombre</option>
-        <option value="Otro">Otro</option>
-    </select>
+            <select name="sexo" id="sexo" class="form-select" required>
+                <option value="">Seleccione Género</option>
+                <option value="Mujer">Mujer</option>
+                <option value="Hombre">Hombre</option>
+                <option value="Otro">Otro</option>
+            </select>
 
-    <select name="especialidad" id="especialidad" class="form-select" required>
-        <option value="">Seleccione Especialidad</option>
-        <option value="Médico General">Médico General</option>
-        <option value="Pediatría">Pediatría</option>
-        <option value="Nutrición">Nutrición</option>
-    </select>
+            <select name="especialidad" id="especialidad" class="form-select" required>
+                <option value="">Seleccione Especialidad</option>
+                <option value="Médico General">Médico General</option>
+                <option value="Pediatría">Pediatría</option>
+                <option value="Nutrición">Nutrición</option>
+            </select>
 
-    
-   <!-- AQUI SE PONE LA PRIORIDAD -->
-<select name="prioridad" id="prioridad" class="form-select" required>
-    <option value="Normal">Prioridad: Normal</option>
-    <option value="Urgente">Prioridad: Urgente (Atención Inmediata)</option>
-</select>
+            <select name="prioridad" id="prioridad" class="form-select" required>
+                <option value="Normal">Prioridad: Normal</option>
+                <option value="Urgente">Prioridad: Urgente (Atención Inmediata)</option>
+            </select>
 
+            <button type="button" class="btn btn-primary-custom mt-2" onclick="generarTurno()">
+            Generar Turno</button>
 
-    <button type="button" class="btn btn-primary-custom mt-2" onclick="generarTurno()">
-    Generar Turno</button>
-
-    <div id="mensajeTurno"></div>
-</form>
-
-
+            <div id="mensajeTurno"></div>
+        </form>
     </div>
 
 

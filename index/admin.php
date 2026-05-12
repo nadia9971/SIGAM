@@ -16,7 +16,7 @@ if (isset($_GET['buscar']) && !empty($_GET['buscar'])) {
     // Aquí también, para que el historial general use la tabla TURNOS
     $sql = "SELECT t.paciente_curp AS curp, p.nombre_completo, t.especialidad, t.fecha_cita AS fecha_registro, t.estado 
             FROM turnos t
-            INNER JOIN pacientes p ON t.paciente_curp = p.curp
+            INNER JOIN historial_pacientes p ON t.paciente_curp = p.curp
             ORDER BY t.fecha_cita DESC";
 }
 $resultado_historial = mysqli_query($conexion, $sql);

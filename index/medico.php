@@ -6,7 +6,11 @@ if (isset($_POST['curp'])) {
     $curp = mysqli_real_escape_string($conexion, $_POST['curp']);
 
     // IMPORTANTE: Usamos el nombre de columna 'paciente_curp' que vimos en tu tabla
-    $sql = "UPDATE turnos SET estado = 'Atendido' WHERE paciente_curp = '$curp'";
+    $sql = "UPDATE turnos 
+        SET estado = 'atendido' 
+        WHERE paciente_curp = '$curp'
+        ORDER BY fecha_cita DESC
+        LIMIT 1";
     
     if (mysqli_query($conexion, $sql)) {
         if (mysqli_affected_rows($conexion) > 0) {
